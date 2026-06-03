@@ -8,4 +8,4 @@
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx54pig7x5jkr1eg-7uVnmvH5Rc0kkXiyviCppIDeHSJkvyJoYmMZCfFrA6MhV-zdpf/exec';
+const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
