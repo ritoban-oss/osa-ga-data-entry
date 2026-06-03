@@ -8,4 +8,4 @@
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwb1f-km5KzsKI-uxlL2Rqfj241cBYTdzpxIF5OQcuip-RQ5o5DBi7tQaV0hk0V4KXg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/library/d/1wS8Kc4T-bsGczqiryvoal78j9umr2aLC2G3Rjk01UF6V_dWVlVNS4rkb/1';
