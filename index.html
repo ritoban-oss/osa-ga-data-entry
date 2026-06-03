@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSA — General Anaesthesia Risk Study | Data Entry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Design Tokens ──────────────────────────────────── */
+    :root {
+      --navy:      #0d2137;
+      --navy-mid:  #163352;
+      --teal:      #0a8fa0;
+      --teal-lt:   #0eb8cf;
+      --teal-pale: #e0f7fa;
+      --coral:     #e05252;
+      --amber:     #e8952a;
+      --bg:        #f0f4f7;
+      --surface:   #ffffff;
+      --border:    #d4dce4;
+      --text:      #1a2f42;
+      --muted:     #6b8299;
+      --label:     #3a5570;
+
+      --font-head: 'Spectral', Georgia, serif;
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+      --radius-sm: 6px;
+      --radius:    10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(13,33,55,.08), 0 1px 8px rgba(13,33,55,.04);
+      --shadow:    0 2px 12px rgba(13,33,55,.10), 0 1px 3px rgba(13,33,55,.06);
+      --shadow-lg: 0 8px 32px rgba(13,33,55,.14);
+
+      --trans: 200ms cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Reset ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .app-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1a4a6b 100%);
+      padding: 28px 32px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .app-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .header-inner {
+      position: relative;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(10,143,160,.25);
+      border: 1px solid rgba(10,143,160,.4);
+      color: var(--teal-lt);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .header-badge::before {
+      content: '●';
+      font-size: 8px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: .3; }
+    }
+    .app-header h1 {
+      font-family: var(--font-head);
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: -.01em;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .app-header h1 em { color: var(--teal-lt); font-style: italic; }
+    .app-header p {
+      font-size: 13.5px;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 28px;
+    }
+
+    /* ── Progress Bar ───────────────────────────────────── */
+    .progress-track {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,.06);
+      border-radius: var(--radius) var(--radius) 0 0;
+      overflow: hidden;
+      margin: 0 -32px;
+    }
+    .prog-step {
+      flex: 1;
+      padding: 9px 4px 10px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--trans);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-bottom: 2px solid transparent;
+      position: relative;
+    }
+    .prog-step.completed {
+      color: var(--teal-lt);
+      border-color: var(--teal);
+      background: rgba(10,143,160,.08);
+    }
+    .prog-step.active {
+      color: #fff;
+      border-color: var(--teal-lt);
+      background: rgba(10,143,160,.15);
+      font-weight: 500;
+    }
+    .prog-step:hover:not(.active) { color: rgba(255,255,255,.65); }
+
+    /* ── Main Wrapper ───────────────────────────────────── */
+    .main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 20px 120px;
+    }
+
+    /* ── Section Card ───────────────────────────────────── */
+    .section-card {
+      display: none;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeSlide .28s ease;
+    }
+    .section-card.active { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .section-head {
+      padding: 20px 28px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to right, #f7fafc, #fff);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .section-icon {
+      width: 40px; height: 40px;
+      background: var(--teal-pale);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .section-head h2 {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--navy);
+      letter-spacing: -.01em;
+    }
+    .section-head p {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .section-body { padding: 28px 28px 20px; }
+
+    /* ── Form Grid ──────────────────────────────────────── */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 24px;
+    }
+    .field-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+    .field-grid.single { grid-template-columns: 1fr; }
+    @media (max-width: 640px) {
+      .field-grid, .field-grid.three-col { grid-template-columns: 1fr; }
+    }
+    .field-span-2 { grid-column: span 2; }
+    @media (max-width: 640px) { .field-span-2 { grid-column: span 1; } }
+
+    /* ── Field ──────────────────────────────────────────── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--label);
+    }
+    .field label .req { color: var(--coral); margin-left: 2px; }
+    .field label .unit {
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-left: 4px;
+    }
+
+    /* ── Inputs ─────────────────────────────────────────── */
+    input[type=text], input[type=number], input[type=date], input[type=time],
+    select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text);
+      background: #fafcfd;
+      transition: border-color var(--trans), box-shadow var(--trans), background var(--trans);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(10,143,160,.12);
+    }
+    input.invalid, select.invalid {
+      border-color: var(--coral);
+      box-shadow: 0 0 0 3px rgba(224,82,82,.1);
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8299' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+    input[type=number] { font-family: var(--font-mono); }
+    .field-hint { font-size: 11.5px; color: var(--muted); margin-top: -2px; }
+    .field-error { font-size: 11.5px; color: var(--coral); display: none; }
+    .field-error.show { display: block; }
+
+    /* ── Toggle (Yes/No) ────────────────────────────────── */
+    .toggle-group {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #fafcfd;
+    }
+    .toggle-group input[type=radio] { display: none; }
+    .toggle-group label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--trans);
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      font-family: var(--font-body);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .toggle-group label:last-of-type { border-right: none; }
+    .toggle-group input:checked + label { background: var(--teal); color: #fff; }
+    .toggle-group.invalid { border-color: var(--coral); }
+
+    /* Conditional fields */
+    .conditional { display: none; }
+    .conditional.show { display: contents; }
+
+    /* ── Dividers ───────────────────────────────────────── */
+    .field-divider {
+      grid-column: 1/-1;
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+    .field-section-label {
+      grid-column: 1/-1;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      font-weight: 500;
+      padding-top: 4px;
+    }
+
+    /* ── Auto-calc badge ────────────────────────────────── */
+    .calc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      color: var(--teal);
+      font-family: var(--font-mono);
+      background: var(--teal-pale);
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    /* ── Nav Bar ────────────────────────────────────────── */
+    .nav-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 100;
+      box-shadow: 0 -4px 20px rgba(13,33,55,.08);
+    }
+    .nav-info {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+    .nav-info strong { color: var(--label); }
+    .nav-btns { display: flex; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--trans);
+      border: none;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg); color: var(--label); border-color: #b8c8d4; }
+    .btn-primary {
+      background: var(--teal);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #0a7d8c; }
+    .btn-submit {
+      background: var(--navy);
+      color: #fff;
+    }
+    .btn-submit:hover { background: #0a1c2e; }
+    .btn svg { width: 15px; height: 15px; }
+
+    /* ── Summary / Review ───────────────────────────────── */
+    .summary-section {
+      margin-bottom: 20px;
+    }
+    .summary-section h3 {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--navy);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 20px;
+    }
+    @media (max-width: 500px) { .summary-grid { grid-template-columns: 1fr; } }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid #f0f4f7;
+    }
+    .summary-item .s-label {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+    .summary-item .s-value {
+      font-size: 13px;
+      color: var(--text);
+      text-align: right;
+      font-weight: 500;
+    }
+    .summary-item .s-value.empty { color: #c0ced8; font-weight: 400; font-style: italic; }
+
+    /* ── Success Screen ─────────────────────────────────── */
+    #success-screen {
+      display: none;
+      min-height: 60vh;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 60px 24px;
+    }
+    #success-screen.show { display: flex; }
+    .success-icon {
+      width: 72px; height: 72px;
+      background: var(--teal-pale);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin-bottom: 24px;
+      animation: pop .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes pop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    #success-screen h2 {
+      font-family: var(--font-head);
+      font-size: 26px;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    #success-screen p {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 420px;
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+    #success-screen .meta {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--teal);
+      background: var(--teal-pale);
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 28px;
+    }
+
+
+    /* ── Spinner ────────────────────────────────────────── */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Alert Banner ───────────────────────────────────── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .alert-warn {
+      background: #fff8ec;
+      border: 1px solid #f0d08a;
+      color: #7a5200;
+    }
+    .alert-info {
+      background: var(--teal-pale);
+      border: 1px solid #a8e4ec;
+      color: #0a4a55;
+    }
+
+
+  </style>
+</head>
+<body>
+
+<!-- Setup button removed — URL is configured in config.js -->
+
+<!-- ═══ App Header ══════════════════════════════════════════ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-badge">Clinical Data Entry · Active</div>
+    <h1>Peri-operative Risk of <em>General Anaesthesia</em> in OSA Patients</h1>
+    <p>Complete all sections accurately. Data is submitted directly to the study spreadsheet.</p>
+
+    <!-- Progress Steps -->
+    <div class="progress-track" id="progressTrack">
+      <div class="prog-step active" data-step="0" onclick="jumpToStep(0)">Demographics</div>
+      <div class="prog-step" data-step="1" onclick="jumpToStep(1)">OSA Details</div>
+      <div class="prog-step" data-step="2" onclick="jumpToStep(2)">PAP Therapy</div>
+      <div class="prog-step" data-step="3" onclick="jumpToStep(3)">Surgery</div>
+      <div class="prog-step" data-step="4" onclick="jumpToStep(4)">Anaesthesia</div>
+      <div class="prog-step" data-step="5" onclick="jumpToStep(5)">Intra-op</div>
+      <div class="prog-step" data-step="6" onclick="jumpToStep(6)">PACU</div>
+      <div class="prog-step" data-step="7" onclick="jumpToStep(7)">Post-op</div>
+      <div class="prog-step" data-step="8" onclick="jumpToStep(8)">Review</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ Main ════════════════════════════════════════════════ -->
+<main class="main">
+
+  <div id="form-wrapper">
+    <!-- ─── STEP 0: Demographics ─────────────────────────── -->
+    <div class="section-card active" data-section="0">
+      <div class="section-head">
+        <div class="section-icon">🏥</div>
+        <div>
+          <h2>Patient Demographics</h2>
+          <p>Basic patient identification and anthropometric measurements</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field">
+            <label>Study ID <span class="req">*</span></label>
+            <input type="text" id="study_id" placeholder="e.g. OSA-2024-001" />
+          </div>
+          <div class="field">
+            <label>Date of Surgery <span class="req">*</span></label>
+            <input type="date" id="date_surgery" />
+          </div>
+          <div class="field">
+            <label>Age <span class="unit">(years)</span><span class="req">*</span></label>
+            <input type="number" id="age" placeholder="—" min="18" max="110" />
+          </div>
+          <div class="field">
+            <label>Sex <span class="req">*</span></label>
+            <select id="sex">
+              <option value="">— Select —</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Height <span class="unit">(cm)</span></label>
+            <input type="number" id="height" placeholder="—" min="100" max="230" oninput="calcBMI()" />
+          </div>
+          <div class="field">
+            <label>Weight <span class="unit">(kg)</span></label>
+            <input type="number" id="weight" placeholder="—" min="20" max="300" step="0.1" oninput="calcBMI()" />
+          </div>
+          <div class="field">
+            <label>BMI</label>
+            <input type="number" id="bmi" placeholder="Auto-calculated" step="0.01" />
+            <span class="calc-badge">⚡ Auto from height &amp; weight</span>
+          </div>
+          <div class="field">
+            <label>Neck Circumference <span class="unit">(cm)</span></label>
+            <input type="number" id="neck_circumference" placeholder="—" min="20" max="70" step="0.1" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 1: OSA Details ──────────────────────────── -->
+    <div class="section-card" data-section="1">
+      <div class="section-head">
+        <div class="section-icon">🫁</div>
+        <div>
+          <h2>OSA Details</h2>
+          <p>Sleep study findings and clinical severity measures</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field field-span-2">
+            <label>OSA Diagnosed <span class="req">*</span></label>
+            <div class="toggle-group" id="osa_diagnosed_group">
+              <input type="radio" name="osa_diagnosed" id="osa_yes" value="Yes">
+              <label for="osa_yes">Yes</label>
+              <input type="radio" name="osa_diagnosed" id="osa_no" value="No">
+              <label for="osa_no">No</label>
+              <input type="radio" name="osa_diagnosed" id="osa_suspected" value="Suspected">
+              <label for="osa_suspected">Suspected</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Sleep Study Type</label>
+            <select id="sleep_study_type">
+              <option value="">— Select —</option>
+              <option>Polysomnography (PSG)</option>
+              <option>Home Sleep Apnea Test (HSAT)</option>
+              <option>Portable Monitoring</option>
+              <option>WatchPAT</option>
+              <option>Clinical Diagnosis (No Study)</option>
+              <option>Not Done</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>AHI <span class="unit">(events/hr)</span></label>
+            <input type="number" id="ahi" placeholder="—" min="0" max="150" step="0.1" />
+          </div>
+          <div class="field">
+            <label>OSA Severity</label>
+            <select id="osa_severity">
+              <option value="">— Select —</option>
+              <option>Mild (AHI 5–14.9)</option>
+              <option>Moderate (AHI 15–29.9)</option>
+              <option>Severe (AHI ≥30)</option>
+              <option>Not Determined</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>ODI <span class="unit">(events/hr)</span></label>
+            <input type="number" id="odi" placeholder="—" min="0" max="150" step="0.1" />
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Oximetry Parameters</div>
+          <div class="field">
+            <label>Lowest SpO₂ <span class="unit">(%)</span></label>
+            <input type="number" id="lowest_spo2_sleep" placeholder="—" min="50" max="100" step="0.1" />
+          </div>
+          <div class="field">
+            <label>Mean SpO₂ <span class="unit">(%)</span></label>
+            <input type="number" id="mean_spo2" placeholder="—" min="50" max="100" step="0.1" />
+          </div>
+          <div class="field">
+            <label>T90 <span class="unit">(%)</span><span style="font-weight:400;font-size:10px;color:var(--muted);"> — time SpO₂ &lt;90%</span></label>
+            <input type="number" id="t90" placeholder="—" min="0" max="100" step="0.1" />
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Clinical Scores</div>
+          <div class="field">
+            <label>STOP-BANG Score <span class="unit">(0–8)</span></label>
+            <select id="stopbang">
+              <option value="">— Select —</option>
+              <option>0</option><option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Epworth Sleepiness Score <span class="unit">(0–24)</span></label>
+            <input type="number" id="epworth" placeholder="—" min="0" max="24" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 2: PAP Therapy ──────────────────────────── -->
+    <div class="section-card" data-section="2">
+      <div class="section-head">
+        <div class="section-icon">😷</div>
+        <div>
+          <h2>PAP Therapy</h2>
+          <p>Positive airway pressure treatment history and compliance</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field field-span-2">
+            <label>PAP Therapy Prescribed <span class="req">*</span></label>
+            <div class="toggle-group" id="pap_prescribed_group" onchange="togglePAP(this)">
+              <input type="radio" name="pap_prescribed" id="pap_yes" value="Yes" onchange="togglePAP()">
+              <label for="pap_yes">Yes</label>
+              <input type="radio" name="pap_prescribed" id="pap_no" value="No" onchange="togglePAP()">
+              <label for="pap_no">No</label>
+              <input type="radio" name="pap_prescribed" id="pap_na" value="N/A" onchange="togglePAP()">
+              <label for="pap_na">N/A</label>
+            </div>
+          </div>
+
+          <div class="conditional" id="pap_conditional">
+            <div class="field">
+              <label>Device Type</label>
+              <select id="device_type">
+                <option value="">— Select —</option>
+                <option>CPAP</option>
+                <option>BiPAP / BPAP</option>
+                <option>APAP / AutoPAP</option>
+                <option>ASV (Adaptive Servo-Ventilation)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Compliance <span class="unit">(hrs/night)</span></label>
+              <input type="number" id="compliance" placeholder="—" min="0" max="12" step="0.1" />
+            </div>
+            <div class="field">
+              <label>Used Night Before Surgery <span class="req">*</span></label>
+              <div class="toggle-group" id="used_preop_group">
+                <input type="radio" name="used_preop" id="preop_yes" value="Yes">
+                <label for="preop_yes">Yes</label>
+                <input type="radio" name="used_preop" id="preop_no" value="No">
+                <label for="preop_no">No</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Used Post-operatively <span class="req">*</span></label>
+              <div class="toggle-group" id="used_postop_group">
+                <input type="radio" name="used_postop" id="postop_yes" value="Yes">
+                <label for="postop_yes">Yes</label>
+                <input type="radio" name="used_postop" id="postop_no" value="No">
+                <label for="postop_no">No</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-info" style="margin-top:16px;">
+          <span>ℹ️</span>
+          <span>If PAP is <strong>No</strong> or <strong>N/A</strong>, device and compliance fields are not applicable.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 3: Surgical Data ────────────────────────── -->
+    <div class="section-card" data-section="3">
+      <div class="section-head">
+        <div class="section-icon">🔪</div>
+        <div>
+          <h2>Surgical Data</h2>
+          <p>Procedure type, specialty, and operative duration</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field field-span-2">
+            <label>Type of Surgery <span class="req">*</span></label>
+            <input type="text" id="surgery_type" placeholder="e.g. Laparoscopic cholecystectomy" />
+          </div>
+          <div class="field">
+            <label>Surgical Specialty <span class="req">*</span></label>
+            <select id="specialty">
+              <option value="">— Select —</option>
+              <option>General Surgery</option>
+              <option>Orthopaedics</option>
+              <option>ENT / Head &amp; Neck</option>
+              <option>Urology</option>
+              <option>Gynaecology</option>
+              <option>Cardiothoracic</option>
+              <option>Neurosurgery</option>
+              <option>Vascular Surgery</option>
+              <option>Bariatric Surgery</option>
+              <option>Plastics / Burns</option>
+              <option>Ophthalmology</option>
+              <option>Dental / Maxillofacial</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Urgency</label>
+            <div class="toggle-group" id="urgency_group">
+              <input type="radio" name="urgency" id="urg_elective" value="Elective">
+              <label for="urg_elective">Elective</label>
+              <input type="radio" name="urgency" id="urg_emergency" value="Emergency">
+              <label for="urg_emergency">Emergency</label>
+              <input type="radio" name="urgency" id="urg_urgent" value="Urgent">
+              <label for="urg_urgent">Urgent</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Duration of Surgery <span class="unit">(min)</span><span class="req">*</span></label>
+            <input type="number" id="surgery_duration" placeholder="—" min="1" max="900" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 4: Anaesthesia Data ─────────────────────── -->
+    <div class="section-card" data-section="4">
+      <div class="section-head">
+        <div class="section-icon">💉</div>
+        <div>
+          <h2>Anaesthesia Data</h2>
+          <p>Anaesthetic technique, airway assessment, and agents used</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field">
+            <label>Type of Anaesthesia <span class="req">*</span></label>
+            <select id="anaesthesia_type">
+              <option value="">— Select —</option>
+              <option>General Anaesthesia (GA)</option>
+              <option>Regional (Spinal/Epidural)</option>
+              <option>Regional + Sedation</option>
+              <option>GA + Regional</option>
+              <option>MAC / Monitored Sedation</option>
+              <option>Local + Sedation</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>ASA Physical Status <span class="req">*</span></label>
+            <select id="asa_grade">
+              <option value="">— Select —</option>
+              <option>ASA I — Normal healthy</option>
+              <option>ASA II — Mild systemic disease</option>
+              <option>ASA III — Severe systemic disease</option>
+              <option>ASA IV — Life-threatening disease</option>
+              <option>ASA V — Moribund</option>
+              <option>ASA VI — Brain-dead (organ donation)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Mallampati Class</label>
+            <select id="mallampati">
+              <option value="">— Select —</option>
+              <option>Class I</option>
+              <option>Class II</option>
+              <option>Class III</option>
+              <option>Class IV</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Difficult Intubation?</label>
+            <div class="toggle-group" id="difficult_intubation_group" onchange="toggleIntubation()">
+              <input type="radio" name="difficult_intubation" id="di_yes" value="Yes" onchange="toggleIntubation()">
+              <label for="di_yes">Yes</label>
+              <input type="radio" name="difficult_intubation" id="di_no" value="No" onchange="toggleIntubation()">
+              <label for="di_no">No</label>
+              <input type="radio" name="difficult_intubation" id="di_na" value="N/A" onchange="toggleIntubation()">
+              <label for="di_na">N/A</label>
+            </div>
+          </div>
+          <div class="conditional" id="intubation_conditional">
+            <div class="field">
+              <label>Number of Intubation Attempts</label>
+              <input type="number" id="intubation_attempts" placeholder="—" min="1" max="10" />
+            </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Opioid Administration</div>
+          <div class="field">
+            <label>Opioid Used</label>
+            <select id="opioid_used">
+              <option value="">— Select —</option>
+              <option>None</option>
+              <option>Morphine</option>
+              <option>Fentanyl</option>
+              <option>Tramadol</option>
+              <option>Pethidine</option>
+              <option>Hydromorphone</option>
+              <option>Oxycodone</option>
+              <option>Remifentanil</option>
+              <option>Sufentanil</option>
+              <option>Multiple / Combination</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Total Opioid Dose <span class="unit">(mg / equivalent)</span></label>
+            <input type="number" id="opioid_dose" placeholder="—" min="0" step="0.01" />
+            <span class="field-hint">Use morphine-equivalent dose if multiple opioids given</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 5: Intra-operative Events ──────────────── -->
+    <div class="section-card" data-section="5">
+      <div class="section-head">
+        <div class="section-icon">📊</div>
+        <div>
+          <h2>Intra-operative Events</h2>
+          <p>Adverse events and physiological parameters during surgery</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+
+          <div class="field">
+            <label>Desaturation &lt;90%?</label>
+            <div class="toggle-group" id="intraop_desat_group">
+              <input type="radio" name="intraop_desat" id="intraop_desat_yes" value="Yes">
+              <label for="intraop_desat_yes">Yes</label>
+              <input type="radio" name="intraop_desat" id="intraop_desat_no" value="No">
+              <label for="intraop_desat_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Lowest Intra-op SpO₂ <span class="unit">(%)</span></label>
+            <input type="number" id="lowest_intraop_spo2" placeholder="—" min="40" max="100" step="0.1" />
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Airway Events</div>
+          <div class="field">
+            <label>Difficult Mask Ventilation?</label>
+            <div class="toggle-group" id="mask_vent_group">
+              <input type="radio" name="mask_vent" id="mv_yes" value="Yes">
+              <label for="mv_yes">Yes</label>
+              <input type="radio" name="mask_vent" id="mv_no" value="No">
+              <label for="mv_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Laryngospasm?</label>
+            <div class="toggle-group" id="laryngo_group">
+              <input type="radio" name="laryngo" id="lars_yes" value="Yes">
+              <label for="lars_yes">Yes</label>
+              <input type="radio" name="laryngo" id="lars_no" value="No">
+              <label for="lars_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Bronchospasm?</label>
+            <div class="toggle-group" id="broncho_group">
+              <input type="radio" name="broncho" id="bron_yes" value="Yes">
+              <label for="bron_yes">Yes</label>
+              <input type="radio" name="broncho" id="bron_no" value="No">
+              <label for="bron_no">No</label>
+            </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Cardiovascular Events</div>
+          <div class="field">
+            <label>Hypotension?</label>
+            <div class="toggle-group" id="hypotension_group">
+              <input type="radio" name="hypotension" id="hypo_yes" value="Yes">
+              <label for="hypo_yes">Yes</label>
+              <input type="radio" name="hypotension" id="hypo_no" value="No">
+              <label for="hypo_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Arrhythmia?</label>
+            <div class="toggle-group" id="arrhythmia_group">
+              <input type="radio" name="arrhythmia" id="arr_yes" value="Yes">
+              <label for="arr_yes">Yes</label>
+              <input type="radio" name="arrhythmia" id="arr_no" value="No">
+              <label for="arr_no">No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 6: PACU / Recovery ──────────────────────── -->
+    <div class="section-card" data-section="6">
+      <div class="section-head">
+        <div class="section-icon">🛏️</div>
+        <div>
+          <h2>PACU / Recovery</h2>
+          <p>Post-anaesthesia care unit monitoring and events</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field">
+            <label>PACU Arrival Time</label>
+            <input type="time" id="pacu_arrival" oninput="calcPACU()" />
+          </div>
+          <div class="field">
+            <label>PACU Discharge Time</label>
+            <input type="time" id="pacu_discharge" oninput="calcPACU()" />
+          </div>
+          <div class="field">
+            <label>Total PACU Recovery Time <span class="unit">(min)</span></label>
+            <input type="number" id="pacu_duration" placeholder="Auto-calculated" min="0" />
+            <span class="calc-badge">⚡ Auto from arrival/discharge times</span>
+          </div>
+          <div class="field">
+            <label>Aldrete Score <span class="unit">(0–10)</span></label>
+            <input type="number" id="aldrete" placeholder="—" min="0" max="10" />
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Oxygen &amp; Airway</div>
+          <div class="field">
+            <label>Supplemental Oxygen Required?</label>
+            <div class="toggle-group" id="o2_group">
+              <input type="radio" name="o2_required" id="o2_yes" value="Yes">
+              <label for="o2_yes">Yes</label>
+              <input type="radio" name="o2_required" id="o2_no" value="No">
+              <label for="o2_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Post-op Desaturation?</label>
+            <div class="toggle-group" id="postop_desat_group">
+              <input type="radio" name="postop_desat" id="pd_yes" value="Yes">
+              <label for="pd_yes">Yes</label>
+              <input type="radio" name="postop_desat" id="pd_no" value="No">
+              <label for="pd_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Lowest PACU SpO₂ <span class="unit">(%)</span></label>
+            <input type="number" id="lowest_pacu_spo2" placeholder="—" min="40" max="100" step="0.1" />
+          </div>
+          <div class="field">
+            <label>Airway Obstruction in PACU?</label>
+            <div class="toggle-group" id="airway_obs_group">
+              <input type="radio" name="airway_obs" id="ao_yes" value="Yes">
+              <label for="ao_yes">Yes</label>
+              <input type="radio" name="airway_obs" id="ao_no" value="No">
+              <label for="ao_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>CPAP Required in PACU?</label>
+            <div class="toggle-group" id="pacu_cpap_group">
+              <input type="radio" name="pacu_cpap" id="pcpap_yes" value="Yes">
+              <label for="pcpap_yes">Yes</label>
+              <input type="radio" name="pacu_cpap" id="pcpap_no" value="No">
+              <label for="pcpap_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Re-intubation Required?</label>
+            <div class="toggle-group" id="reintub_group">
+              <input type="radio" name="reintub" id="ri_yes" value="Yes">
+              <label for="ri_yes">Yes</label>
+              <input type="radio" name="reintub" id="ri_no" value="No">
+              <label for="ri_no">No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 7: Post-operative Outcomes ─────────────── -->
+    <div class="section-card" data-section="7">
+      <div class="section-head">
+        <div class="section-icon">📋</div>
+        <div>
+          <h2>Post-operative Outcomes</h2>
+          <p>Admission level, complications, and hospital course</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field-section-label">Admission Level</div>
+          <div class="field">
+            <label>Ward Admission <span class="req">*</span></label>
+            <div class="toggle-group" id="ward_group">
+              <input type="radio" name="ward" id="ward_yes" value="Yes">
+              <label for="ward_yes">Yes</label>
+              <input type="radio" name="ward" id="ward_no" value="No">
+              <label for="ward_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>HDU Admission Required? <span class="req">*</span></label>
+            <div class="toggle-group" id="hdu_group">
+              <input type="radio" name="hdu" id="hdu_yes" value="Yes">
+              <label for="hdu_yes">Yes</label>
+              <input type="radio" name="hdu" id="hdu_no" value="No">
+              <label for="hdu_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>ICU / ICCU Admission Required? <span class="req">*</span></label>
+            <div class="toggle-group" id="icu_group">
+              <input type="radio" name="icu" id="icu_yes" value="Yes">
+              <label for="icu_yes">Yes</label>
+              <input type="radio" name="icu" id="icu_no" value="No">
+              <label for="icu_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Mechanical Ventilation Post-op?</label>
+            <div class="toggle-group" id="mechvent_group">
+              <input type="radio" name="mechvent" id="mv2_yes" value="Yes">
+              <label for="mv2_yes">Yes</label>
+              <input type="radio" name="mechvent" id="mv2_no" value="No">
+              <label for="mv2_no">No</label>
+            </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Hospital Course</div>
+          <div class="field">
+            <label>Length of Hospital Stay <span class="unit">(days)</span></label>
+            <input type="number" id="los" placeholder="—" min="0" max="365" step="0.5" />
+          </div>
+          <div class="field">
+            <label>Complication Within 24 Hours?</label>
+            <div class="toggle-group" id="comp24_group">
+              <input type="radio" name="comp24" id="c24_yes" value="Yes">
+              <label for="c24_yes">Yes</label>
+              <input type="radio" name="comp24" id="c24_no" value="No">
+              <label for="c24_no">No</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Mortality</label>
+            <div class="toggle-group" id="mortality_group">
+              <input type="radio" name="mortality" id="mort_yes" value="Yes">
+              <label for="mort_yes">Yes</label>
+              <input type="radio" name="mortality" id="mort_no" value="No">
+              <label for="mort_no">No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── STEP 8: Review & Submit ──────────────────────── -->
+    <div class="section-card" data-section="8">
+      <div class="section-head">
+        <div class="section-icon">✅</div>
+        <div>
+          <h2>Review &amp; Submit</h2>
+          <p>Verify all entries before sending to the study database</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="review-container"></div>
+        <div class="alert alert-warn" id="no-script-warning" style="margin-top:16px;display:none;">
+          <span>⚠️</span>
+          <div>
+            <strong>Apps Script URL not set.</strong> Open <code>config.js</code> and paste your deployed web app URL into <code>SCRIPT_URL</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Success Screen ──────────────────────────────────── -->
+  <div id="success-screen">
+    <div class="success-icon">✓</div>
+    <h2>Record Submitted</h2>
+    <p>Patient data has been sent to the study Google Sheet. You can now start a new entry.</p>
+    <div class="meta" id="success-meta"></div>
+    <button class="btn btn-primary" onclick="resetForm()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 4V1L8 5l4 4V6a6 6 0 110 12 6 6 0 01-5.2-3"/></svg>
+      New Entry
+    </button>
+  </div>
+</main>
+
+<!-- ═══ Nav Bar ═════════════════════════════════════════════ -->
+<nav class="nav-bar" id="navBar">
+  <div class="nav-info">
+    Step <strong id="stepLabel">1</strong> of <strong>8</strong>
+    &nbsp;·&nbsp; <span id="sectionName">Demographics</span>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-ghost" id="btnPrev" onclick="prevStep()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Back
+    </button>
+    <button class="btn btn-primary" id="btnNext" onclick="nextStep()">
+      Next
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button class="btn btn-submit" id="btnSubmit" style="display:none" onclick="submitForm()">
+      <span id="submitLabel">Submit to Sheet</span>
+      <div class="spinner" id="submitSpinner" style="display:none"></div>
+    </button>
+  </div>
+</nav>
+
+
+
+<!-- ═══ Config & Script ══════════════════════════════════════ -->
+<script src="config.js"></script>
+<script>
+  /* ── State ─────────────────────────────────────────────── */
+  let currentStep = 0;
+  const TOTAL_STEPS = 9; // 0-8
+  const SECTION_NAMES = [
+    'Demographics','OSA Details','PAP Therapy','Surgery',
+    'Anaesthesia','Intra-op Events','PACU / Recovery','Post-op Outcomes','Review'
+  ];
+
+  /* ── Navigation ─────────────────────────────────────────── */
+  function updateNav() {
+    document.getElementById('stepLabel').textContent = currentStep + 1;
+    document.getElementById('sectionName').textContent = SECTION_NAMES[currentStep];
+    document.getElementById('btnPrev').style.display = currentStep === 0 ? 'none' : '';
+    document.getElementById('btnNext').style.display = currentStep === 8 ? 'none' : '';
+    document.getElementById('btnSubmit').style.display = currentStep === 8 ? '' : 'none';
+    // Progress steps
+    document.querySelectorAll('.prog-step').forEach((el, i) => {
+      el.classList.remove('active','completed');
+      if (i === currentStep) el.classList.add('active');
+      else if (i < currentStep) el.classList.add('completed');
+    });
+    // Cards
+    document.querySelectorAll('.section-card').forEach((el, i) => {
+      el.classList.toggle('active', i === currentStep);
+    });
+    // Show/hide warning on review
+    if (currentStep === 8) {
+      buildReview();
+      const configured = SCRIPT_URL && SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+      document.getElementById('no-script-warning').style.display = configured ? 'none' : '';
+    }
+  }
+
+  function nextStep() {
+    if (currentStep < 8) { currentStep++; updateNav(); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+  function prevStep() {
+    if (currentStep > 0) { currentStep--; updateNav(); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+  function jumpToStep(n) {
+    if (n <= currentStep) { currentStep = n; updateNav(); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+
+  /* ── Auto-calc BMI ──────────────────────────────────────── */
+  function calcBMI() {
+    const h = parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('weight').value);
+    if (h > 0 && w > 0) {
+      const bmi = (w / ((h/100) ** 2)).toFixed(1);
+      document.getElementById('bmi').value = bmi;
+    }
+  }
+
+  /* ── Auto-calc PACU Duration ────────────────────────────── */
+  function calcPACU() {
+    const at = document.getElementById('pacu_arrival').value;
+    const dt = document.getElementById('pacu_discharge').value;
+    if (at && dt) {
+      const [ah, am] = at.split(':').map(Number);
+      let [dh, dm] = dt.split(':').map(Number);
+      let diff = (dh * 60 + dm) - (ah * 60 + am);
+      if (diff < 0) diff += 24 * 60; // past midnight
+      document.getElementById('pacu_duration').value = diff;
+    }
+  }
+
+  /* ── Conditional visibility ─────────────────────────────── */
+  function togglePAP() {
+    const val = document.querySelector('input[name="pap_prescribed"]:checked')?.value;
+    const el = document.getElementById('pap_conditional');
+    if (val === 'Yes') el.classList.add('show');
+    else el.classList.remove('show');
+  }
+  function toggleIntubation() {
+    const val = document.querySelector('input[name="difficult_intubation"]:checked')?.value;
+    const el = document.getElementById('intubation_conditional');
+    if (val === 'Yes') el.classList.add('show');
+    else el.classList.remove('show');
+  }
+
+  /* ── Data collection ────────────────────────────────────── */
+  function getRadio(name) {
+    return document.querySelector(`input[name="${name}"]:checked`)?.value ?? '';
+  }
+  function getVal(id) {
+    return document.getElementById(id)?.value?.trim() ?? '';
+  }
+
+  function collectData() {
+    return {
+      // Timestamp
+      timestamp:              new Date().toISOString(),
+      // Demographics
+      study_id:               getVal('study_id'),
+      date_surgery:           getVal('date_surgery'),
+      age:                    getVal('age'),
+      sex:                    getVal('sex'),
+      height_cm:              getVal('height'),
+      weight_kg:              getVal('weight'),
+      bmi:                    getVal('bmi'),
+      neck_circumference_cm:  getVal('neck_circumference'),
+      // OSA Details
+      osa_diagnosed:          getRadio('osa_diagnosed'),
+      sleep_study_type:       getVal('sleep_study_type'),
+      ahi:                    getVal('ahi'),
+      osa_severity:           getVal('osa_severity'),
+      odi:                    getVal('odi'),
+      lowest_spo2_sleep:      getVal('lowest_spo2_sleep'),
+      mean_spo2:              getVal('mean_spo2'),
+      t90_pct:                getVal('t90'),
+      stopbang_score:         getVal('stopbang'),
+      epworth_score:          getVal('epworth'),
+      // PAP
+      pap_prescribed:         getRadio('pap_prescribed'),
+      device_type:            getVal('device_type'),
+      compliance_hrs:         getVal('compliance'),
+      pap_used_preop:         getRadio('used_preop'),
+      pap_used_postop:        getRadio('used_postop'),
+      // Surgery
+      surgery_type:           getVal('surgery_type'),
+      specialty:              getVal('specialty'),
+      urgency:                getRadio('urgency'),
+      surgery_duration_min:   getVal('surgery_duration'),
+      // Anaesthesia
+      anaesthesia_type:       getVal('anaesthesia_type'),
+      asa_grade:              getVal('asa_grade'),
+      mallampati:             getVal('mallampati'),
+      difficult_intubation:   getRadio('difficult_intubation'),
+      intubation_attempts:    getVal('intubation_attempts'),
+      opioid_used:            getVal('opioid_used'),
+      opioid_dose_mg:         getVal('opioid_dose'),
+      // Intra-op
+      intraop_desat_lt90:     getRadio('intraop_desat'),
+      lowest_intraop_spo2:    getVal('lowest_intraop_spo2'),
+      difficult_mask_vent:    getRadio('mask_vent'),
+      laryngospasm:           getRadio('laryngo'),
+      bronchospasm:           getRadio('broncho'),
+      hypotension:            getRadio('hypotension'),
+      arrhythmia:             getRadio('arrhythmia'),
+      // PACU
+      pacu_arrival:           getVal('pacu_arrival'),
+      pacu_discharge:         getVal('pacu_discharge'),
+      pacu_duration_min:      getVal('pacu_duration'),
+      aldrete_score:          getVal('aldrete'),
+      o2_required:            getRadio('o2_required'),
+      postop_desat:           getRadio('postop_desat'),
+      lowest_pacu_spo2:       getVal('lowest_pacu_spo2'),
+      airway_obstruction:     getRadio('airway_obs'),
+      pacu_cpap:              getRadio('pacu_cpap'),
+      reintubation:           getRadio('reintub'),
+      // Post-op
+      ward_admission:         getRadio('ward'),
+      hdu_required:           getRadio('hdu'),
+      icu_required:           getRadio('icu'),
+      mechanical_vent_postop: getRadio('mechvent'),
+      los_days:               getVal('los'),
+      complication_24h:       getRadio('comp24'),
+      mortality:              getRadio('mortality'),
+    };
+  }
+
+  /* ── Build Review ───────────────────────────────────────── */
+  function buildReview() {
+    const d = collectData();
+    const sections = [
+      { title: '🏥 Demographics', keys: ['study_id','date_surgery','age','sex','height_cm','weight_kg','bmi','neck_circumference_cm'] },
+      { title: '🫁 OSA Details', keys: ['osa_diagnosed','sleep_study_type','ahi','osa_severity','odi','lowest_spo2_sleep','mean_spo2','t90_pct','stopbang_score','epworth_score'] },
+      { title: '😷 PAP Therapy', keys: ['pap_prescribed','device_type','compliance_hrs','pap_used_preop','pap_used_postop'] },
+      { title: '🔪 Surgery', keys: ['surgery_type','specialty','urgency','surgery_duration_min'] },
+      { title: '💉 Anaesthesia', keys: ['anaesthesia_type','asa_grade','mallampati','difficult_intubation','intubation_attempts','opioid_used','opioid_dose_mg'] },
+      { title: '📊 Intra-op Events', keys: ['intraop_desat_lt90','lowest_intraop_spo2','difficult_mask_vent','laryngospasm','bronchospasm','hypotension','arrhythmia'] },
+      { title: '🛏️ PACU', keys: ['pacu_arrival','pacu_discharge','pacu_duration_min','aldrete_score','o2_required','postop_desat','lowest_pacu_spo2','airway_obstruction','pacu_cpap','reintubation'] },
+      { title: '📋 Post-op Outcomes', keys: ['ward_admission','hdu_required','icu_required','mechanical_vent_postop','los_days','complication_24h','mortality'] },
+    ];
+    const labels = {
+      study_id:'Study ID', date_surgery:'Date of Surgery', age:'Age (yrs)', sex:'Sex',
+      height_cm:'Height (cm)', weight_kg:'Weight (kg)', bmi:'BMI', neck_circumference_cm:'Neck Circ. (cm)',
+      osa_diagnosed:'OSA Diagnosed', sleep_study_type:'Study Type', ahi:'AHI', osa_severity:'Severity',
+      odi:'ODI', lowest_spo2_sleep:'Lowest SpO₂', mean_spo2:'Mean SpO₂', t90_pct:'T90 (%)',
+      stopbang_score:'STOP-BANG', epworth_score:'Epworth',
+      pap_prescribed:'PAP Prescribed', device_type:'Device', compliance_hrs:'Compliance (hr)', pap_used_preop:'Used Pre-op', pap_used_postop:'Used Post-op',
+      surgery_type:'Surgery', specialty:'Specialty', urgency:'Urgency', surgery_duration_min:'Duration (min)',
+      anaesthesia_type:'Anaesthesia', asa_grade:'ASA Grade', mallampati:'Mallampati', difficult_intubation:'Difficult Intubation', intubation_attempts:'Attempts', opioid_used:'Opioid', opioid_dose_mg:'Dose (mg)',
+      intraop_desat_lt90:'Desat <90%', lowest_intraop_spo2:'Lowest SpO₂', difficult_mask_vent:'Difficult Mask', laryngospasm:'Laryngospasm', bronchospasm:'Bronchospasm', hypotension:'Hypotension', arrhythmia:'Arrhythmia',
+      pacu_arrival:'Arrival', pacu_discharge:'Discharge', pacu_duration_min:'Duration (min)', aldrete_score:'Aldrete', o2_required:'O₂ Required', postop_desat:'Post-op Desat', lowest_pacu_spo2:'Lowest SpO₂', airway_obstruction:'Airway Obs.', pacu_cpap:'CPAP', reintubation:'Re-intubation',
+      ward_admission:'Ward', hdu_required:'HDU', icu_required:'ICU/ICCU', mechanical_vent_postop:'Mech. Vent.', los_days:'LOS (days)', complication_24h:'Complication 24h', mortality:'Mortality',
+    };
+    let html = '';
+    for (const s of sections) {
+      html += `<div class="summary-section"><h3>${s.title}</h3><div class="summary-grid">`;
+      for (const k of s.keys) {
+        const val = d[k];
+        const isEmpty = !val;
+        html += `<div class="summary-item">
+          <span class="s-label">${labels[k] || k}</span>
+          <span class="s-value${isEmpty?' empty':''}">${isEmpty ? '—' : val}</span>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+    document.getElementById('review-container').innerHTML = html;
+  }
+
+  /* ── Submit ─────────────────────────────────────────────── */
+  async function submitForm() {
+    if (!SCRIPT_URL || SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+      document.getElementById('no-script-warning').style.display = '';
+      alert('⚠️ Apps Script URL is not configured.\n\nOpen config.js and paste your deployed web app URL into SCRIPT_URL.');
+      return;
+    }
+
+    const btn = document.getElementById('btnSubmit');
+    document.getElementById('submitLabel').style.display = 'none';
+    document.getElementById('submitSpinner').style.display = '';
+    btn.disabled = true;
+
+    const data = collectData();
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data).toString()
+      });
+      showSuccess(data.study_id, data.timestamp);
+    } catch (err) {
+      document.getElementById('submitLabel').style.display = '';
+      document.getElementById('submitSpinner').style.display = 'none';
+      btn.disabled = false;
+      alert('⚠️ Submission failed. Check your network connection and Apps Script URL.\n\n' + err.message);
+    }
+  }
+
+  function showSuccess(studyId, ts) {
+    document.getElementById('form-wrapper').style.display = 'none';
+    document.getElementById('navBar').style.display = 'none';
+    const ss = document.getElementById('success-screen');
+    ss.classList.add('show');
+    document.getElementById('success-meta').textContent =
+      `Study ID: ${studyId || '—'}  ·  Submitted: ${new Date(ts).toLocaleString()}`;
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input[type=text], input[type=number], input[type=date], input[type=time]')
+      .forEach(el => el.value = '');
+    document.querySelectorAll('select').forEach(el => el.value = '');
+    document.querySelectorAll('input[type=radio]').forEach(el => el.checked = false);
+    document.getElementById('pap_conditional').classList.remove('show');
+    document.getElementById('intubation_conditional').classList.remove('show');
+    currentStep = 0;
+    document.getElementById('form-wrapper').style.display = '';
+    document.getElementById('navBar').style.display = '';
+    const ss = document.getElementById('success-screen');
+    ss.classList.remove('show');
+    document.getElementById('submitLabel').style.display = '';
+    document.getElementById('submitSpinner').style.display = 'none';
+    document.getElementById('btnSubmit').disabled = false;
+    updateNav();
+  }
+
+  /* ── Init ───────────────────────────────────────────────── */
+  updateNav();
+</script>
+</body>
+</html>
