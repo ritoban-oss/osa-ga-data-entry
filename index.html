@@ -583,10 +583,7 @@
             <input type="number" id="bmi" placeholder="Auto-calculated" step="0.01" />
             <span class="calc-badge">⚡ Auto from height &amp; weight</span>
           </div>
-          <div class="field">
-            <label>Neck Circumference <span class="unit">(cm)</span></label>
-            <input type="number" id="neck_circumference" placeholder="—" min="20" max="70" step="0.1" />
-          </div>
+
         </div>
       </div>
     </div>
@@ -746,7 +743,7 @@
         <div class="section-icon">🔪</div>
         <div>
           <h2>Surgical Data</h2>
-          <p>Procedure type, specialty, and operative duration</p>
+          <p>Laparoscopic procedure type, specialty, and operative parameters</p>
         </div>
       </div>
       <div class="section-body">
@@ -760,17 +757,12 @@
             <select id="specialty">
               <option value="">— Select —</option>
               <option>General Surgery</option>
-              <option>Orthopaedics</option>
-              <option>ENT / Head &amp; Neck</option>
+              <option>Colorectal Surgery</option>
+              <option>Hepatobiliary Surgery</option>
+              <option>Upper GI Surgery</option>
+              <option>Bariatric Surgery</option>
               <option>Urology</option>
               <option>Gynaecology</option>
-              <option>Cardiothoracic</option>
-              <option>Neurosurgery</option>
-              <option>Vascular Surgery</option>
-              <option>Bariatric Surgery</option>
-              <option>Plastics / Burns</option>
-              <option>Ophthalmology</option>
-              <option>Dental / Maxillofacial</option>
               <option>Other</option>
             </select>
           </div>
@@ -788,6 +780,27 @@
           <div class="field">
             <label>Duration of Surgery <span class="unit">(min)</span><span class="req">*</span></label>
             <input type="number" id="surgery_duration" placeholder="—" min="1" max="900" />
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Laparoscopic Parameters</div>
+          <div class="field">
+            <label>Entry Technique <span class="req">*</span></label>
+            <div class="toggle-group" id="entry_technique_group">
+              <input type="radio" name="entry_technique" id="et_veress" value="Veress Port">
+              <label for="et_veress">Veress Port</label>
+              <input type="radio" name="entry_technique" id="et_open" value="Open Port">
+              <label for="et_open">Open Port</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Insufflator Maintaining IAP</label>
+            <select id="iap_range">
+              <option value="">— Select —</option>
+              <option>8 to 10 mmHg</option>
+              <option>10 to 12 mmHg</option>
+              <option>12 to 14 mmHg</option>
+              <option>Above 14 mmHg</option>
+            </select>
           </div>
         </div>
       </div>
@@ -956,6 +969,23 @@
               <input type="radio" name="arrhythmia" id="arr_no" value="No">
               <label for="arr_no">No</label>
             </div>
+          </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Haemodynamic &amp; Ventilatory Parameters</div>
+          <div class="field">
+            <label>Intra-op Blood Pressure <span class="unit">(mmHg)</span></label>
+            <input type="text" id="intraop_bp" placeholder="e.g. 120/80" />
+            <span class="field-hint">Lowest recorded intra-operative value (systolic/diastolic)</span>
+          </div>
+          <div class="field">
+            <label>ETCO₂ <span class="unit">(mmHg)</span></label>
+            <input type="number" id="etco2" placeholder="—" min="10" max="100" step="0.1" />
+            <span class="field-hint">End-tidal CO₂ — highest recorded intra-operative value</span>
+          </div>
+          <div class="field">
+            <label>GTN Dosage <span class="unit">(mcg/min)</span></label>
+            <input type="number" id="gtn_dosage" placeholder="—" min="0" step="0.1" />
+            <span class="field-hint">Glyceryl trinitrate infusion rate; leave blank if not used</span>
           </div>
         </div>
       </div>
@@ -1281,7 +1311,6 @@
       height_cm:              getVal('height'),
       weight_kg:              getVal('weight'),
       bmi:                    getVal('bmi'),
-      neck_circumference_cm:  getVal('neck_circumference'),
       // OSA Details
       osa_diagnosed:          getRadio('osa_diagnosed'),
       sleep_study_type:       getVal('sleep_study_type'),
@@ -1304,6 +1333,8 @@
       specialty:              getVal('specialty'),
       urgency:                getRadio('urgency'),
       surgery_duration_min:   getVal('surgery_duration'),
+      entry_technique:        getRadio('entry_technique'),
+      iap_range:              getVal('iap_range'),
       // Anaesthesia
       anaesthesia_type:       getVal('anaesthesia_type'),
       asa_grade:              getVal('asa_grade'),
@@ -1320,6 +1351,9 @@
       bronchospasm:           getRadio('broncho'),
       hypotension:            getRadio('hypotension'),
       arrhythmia:             getRadio('arrhythmia'),
+      intraop_bp:             getVal('intraop_bp'),
+      etco2:                  getVal('etco2'),
+      gtn_dosage:             getVal('gtn_dosage'),
       // PACU
       pacu_arrival:           getVal('pacu_arrival'),
       pacu_discharge:         getVal('pacu_discharge'),
@@ -1346,25 +1380,25 @@
   function buildReview() {
     const d = collectData();
     const sections = [
-      { title: '🏥 Demographics', keys: ['study_id','date_surgery','age','sex','height_cm','weight_kg','bmi','neck_circumference_cm'] },
+      { title: '🏥 Demographics', keys: ['study_id','date_surgery','age','sex','height_cm','weight_kg','bmi'] },
       { title: '🫁 OSA Details', keys: ['osa_diagnosed','sleep_study_type','ahi','osa_severity','odi','lowest_spo2_sleep','mean_spo2','t90_pct','stopbang_score','epworth_score'] },
       { title: '😷 PAP Therapy', keys: ['pap_prescribed','device_type','compliance_hrs','pap_used_preop','pap_used_postop'] },
-      { title: '🔪 Surgery', keys: ['surgery_type','specialty','urgency','surgery_duration_min'] },
+      { title: '🔪 Surgery', keys: ['surgery_type','specialty','urgency','surgery_duration_min','entry_technique','iap_range'] },
       { title: '💉 Anaesthesia', keys: ['anaesthesia_type','asa_grade','mallampati','difficult_intubation','intubation_attempts','opioid_used','opioid_dose_mg'] },
-      { title: '📊 Intra-op Events', keys: ['intraop_desat_lt90','lowest_intraop_spo2','difficult_mask_vent','laryngospasm','bronchospasm','hypotension','arrhythmia'] },
+      { title: '📊 Intra-op Events', keys: ['intraop_desat_lt90','lowest_intraop_spo2','difficult_mask_vent','laryngospasm','bronchospasm','hypotension','arrhythmia','intraop_bp','etco2','gtn_dosage'] },
       { title: '🛏️ PACU', keys: ['pacu_arrival','pacu_discharge','pacu_duration_min','aldrete_score','o2_required','postop_desat','lowest_pacu_spo2','airway_obstruction','pacu_cpap','reintubation'] },
       { title: '📋 Post-op Outcomes', keys: ['ward_admission','hdu_required','icu_required','mechanical_vent_postop','los_days','complication_24h','mortality'] },
     ];
     const labels = {
       study_id:'Study ID', date_surgery:'Date of Surgery', age:'Age (yrs)', sex:'Sex',
-      height_cm:'Height (cm)', weight_kg:'Weight (kg)', bmi:'BMI', neck_circumference_cm:'Neck Circ. (cm)',
+      height_cm:'Height (cm)', weight_kg:'Weight (kg)', bmi:'BMI',
       osa_diagnosed:'OSA Diagnosed', sleep_study_type:'Study Type', ahi:'AHI', osa_severity:'Severity',
       odi:'ODI', lowest_spo2_sleep:'Lowest SpO₂', mean_spo2:'Mean SpO₂', t90_pct:'T90 (%)',
       stopbang_score:'STOP-BANG', epworth_score:'Epworth',
       pap_prescribed:'PAP Prescribed', device_type:'Device', compliance_hrs:'Compliance (hr)', pap_used_preop:'Used Pre-op', pap_used_postop:'Used Post-op',
-      surgery_type:'Surgery', specialty:'Specialty', urgency:'Urgency', surgery_duration_min:'Duration (min)',
+      surgery_type:'Surgery', specialty:'Specialty', urgency:'Urgency', surgery_duration_min:'Duration (min)', entry_technique:'Entry Technique', iap_range:'IAP Range',
       anaesthesia_type:'Anaesthesia', asa_grade:'ASA Grade', mallampati:'Mallampati', difficult_intubation:'Difficult Intubation', intubation_attempts:'Attempts', opioid_used:'Opioid', opioid_dose_mg:'Dose (mg)',
-      intraop_desat_lt90:'Desat <90%', lowest_intraop_spo2:'Lowest SpO₂', difficult_mask_vent:'Difficult Mask', laryngospasm:'Laryngospasm', bronchospasm:'Bronchospasm', hypotension:'Hypotension', arrhythmia:'Arrhythmia',
+      intraop_desat_lt90:'Desat <90%', lowest_intraop_spo2:'Lowest SpO₂', difficult_mask_vent:'Difficult Mask', laryngospasm:'Laryngospasm', bronchospasm:'Bronchospasm', hypotension:'Hypotension', arrhythmia:'Arrhythmia', intraop_bp:'Intra-op BP', etco2:'ETCO₂ (mmHg)', gtn_dosage:'GTN (mcg/min)',
       pacu_arrival:'Arrival', pacu_discharge:'Discharge', pacu_duration_min:'Duration (min)', aldrete_score:'Aldrete', o2_required:'O₂ Required', postop_desat:'Post-op Desat', lowest_pacu_spo2:'Lowest SpO₂', airway_obstruction:'Airway Obs.', pacu_cpap:'CPAP', reintubation:'Re-intubation',
       ward_admission:'Ward', hdu_required:'HDU', icu_required:'ICU/ICCU', mechanical_vent_postop:'Mech. Vent.', los_days:'LOS (days)', complication_24h:'Complication 24h', mortality:'Mortality',
     };
