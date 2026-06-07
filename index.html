@@ -888,8 +888,8 @@
             </select>
           </div>
           <div class="field">
-            <label>Total Opioid Dose <span class="unit">(mg / equivalent)</span></label>
-            <input type="number" id="opioid_dose" placeholder="—" min="0" step="0.01" />
+            <label>Total Opioid Dose <span class="unit">(mcg)</span></label>
+            <input type="number" id="opioid_dose" placeholder="—" min="0" step="0.1" />
             <span class="field-hint">Use morphine-equivalent dose if multiple opioids given</span>
           </div>
         </div>
@@ -1342,7 +1342,7 @@
       difficult_intubation:   getRadio('difficult_intubation'),
       intubation_attempts:    getVal('intubation_attempts'),
       opioid_used:            getVal('opioid_used'),
-      opioid_dose_mg:         getVal('opioid_dose'),
+      opioid_dose_mcg:        getVal('opioid_dose'),
       // Intra-op
       intraop_desat_lt90:     getRadio('intraop_desat'),
       lowest_intraop_spo2:    getVal('lowest_intraop_spo2'),
@@ -1384,7 +1384,7 @@
       { title: '🫁 OSA Details', keys: ['osa_diagnosed','sleep_study_type','ahi','osa_severity','odi','lowest_spo2_sleep','mean_spo2','t90_pct','stopbang_score','epworth_score'] },
       { title: '😷 PAP Therapy', keys: ['pap_prescribed','device_type','compliance_hrs','pap_used_preop','pap_used_postop'] },
       { title: '🔪 Surgery', keys: ['surgery_type','specialty','urgency','surgery_duration_min','entry_technique','iap_range'] },
-      { title: '💉 Anaesthesia', keys: ['anaesthesia_type','asa_grade','mallampati','difficult_intubation','intubation_attempts','opioid_used','opioid_dose_mg'] },
+      { title: '💉 Anaesthesia', keys: ['anaesthesia_type','asa_grade','mallampati','difficult_intubation','intubation_attempts','opioid_used','opioid_dose_mcg'] },
       { title: '📊 Intra-op Events', keys: ['intraop_desat_lt90','lowest_intraop_spo2','difficult_mask_vent','laryngospasm','bronchospasm','hypotension','arrhythmia','intraop_bp','etco2','gtn_dosage'] },
       { title: '🛏️ PACU', keys: ['pacu_arrival','pacu_discharge','pacu_duration_min','aldrete_score','o2_required','postop_desat','lowest_pacu_spo2','airway_obstruction','pacu_cpap','reintubation'] },
       { title: '📋 Post-op Outcomes', keys: ['ward_admission','hdu_required','icu_required','mechanical_vent_postop','los_days','complication_24h','mortality'] },
@@ -1397,7 +1397,7 @@
       stopbang_score:'STOP-BANG', epworth_score:'Epworth',
       pap_prescribed:'PAP Prescribed', device_type:'Device', compliance_hrs:'Compliance (hr)', pap_used_preop:'Used Pre-op', pap_used_postop:'Used Post-op',
       surgery_type:'Surgery', specialty:'Specialty', urgency:'Urgency', surgery_duration_min:'Duration (min)', entry_technique:'Entry Technique', iap_range:'IAP Range',
-      anaesthesia_type:'Anaesthesia', asa_grade:'ASA Grade', mallampati:'Mallampati', difficult_intubation:'Difficult Intubation', intubation_attempts:'Attempts', opioid_used:'Opioid', opioid_dose_mg:'Dose (mg)',
+      anaesthesia_type:'Anaesthesia', asa_grade:'ASA Grade', mallampati:'Mallampati', difficult_intubation:'Difficult Intubation', intubation_attempts:'Attempts', opioid_used:'Opioid', opioid_dose_mcg:'Dose (mcg)',
       intraop_desat_lt90:'Desat <90%', lowest_intraop_spo2:'Lowest SpO₂', difficult_mask_vent:'Difficult Mask', laryngospasm:'Laryngospasm', bronchospasm:'Bronchospasm', hypotension:'Hypotension', arrhythmia:'Arrhythmia', intraop_bp:'Intra-op BP', etco2:'ETCO₂ (mmHg)', gtn_dosage:'GTN (mcg/min)',
       pacu_arrival:'Arrival', pacu_discharge:'Discharge', pacu_duration_min:'Duration (min)', aldrete_score:'Aldrete', o2_required:'O₂ Required', postop_desat:'Post-op Desat', lowest_pacu_spo2:'Lowest SpO₂', airway_obstruction:'Airway Obs.', pacu_cpap:'CPAP', reintubation:'Re-intubation',
       ward_admission:'Ward', hdu_required:'HDU', icu_required:'ICU/ICCU', mechanical_vent_postop:'Mech. Vent.', los_days:'LOS (days)', complication_24h:'Complication 24h', mortality:'Mortality',
