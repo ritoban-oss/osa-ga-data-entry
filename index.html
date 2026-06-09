@@ -665,6 +665,10 @@
             </select>
           </div>
           <div class="field">
+            <label>SONA Score</label>
+            <input type="number" id="sona_score" placeholder="—" min="0" step="1" />
+          </div>
+          <div class="field">
             <label>Epworth Sleepiness Score <span class="unit">(0–24)</span></label>
             <input type="number" id="epworth" placeholder="—" min="0" max="24" />
           </div>
@@ -892,6 +896,19 @@
             <input type="number" id="opioid_dose" placeholder="—" min="0" step="0.1" />
             <span class="field-hint">Use morphine-equivalent dose if multiple opioids given</span>
           </div>
+          <div class="field-divider"></div>
+          <div class="field-section-label">Maintenance Anaesthesia</div>
+          <div class="field field-span-2">
+            <label>Agent Used</label>
+            <div class="toggle-group" id="maintenance_agent_group">
+              <input type="radio" name="maintenance_agent" id="ma_sevo" value="SEVO">
+              <label for="ma_sevo">SEVO</label>
+              <input type="radio" name="maintenance_agent" id="ma_iso" value="ISO">
+              <label for="ma_iso">ISO</label>
+              <input type="radio" name="maintenance_agent" id="ma_propofol" value="Propofol">
+              <label for="ma_propofol">Propofol</label>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -976,6 +993,11 @@
             <label>Intra-op Blood Pressure <span class="unit">(mmHg)</span></label>
             <input type="text" id="intraop_bp" placeholder="e.g. 120/80" />
             <span class="field-hint">Lowest recorded intra-operative value (systolic/diastolic)</span>
+          </div>
+          <div class="field">
+            <label>Intra-op Heart Rate <span class="unit">(bpm)</span></label>
+            <input type="number" id="intraop_hr" placeholder="—" min="20" max="300" step="1" />
+            <span class="field-hint">Lowest recorded intra-operative value</span>
           </div>
           <div class="field">
             <label>ETCO₂ <span class="unit">(mmHg)</span></label>
@@ -1321,6 +1343,7 @@
       mean_spo2:              getVal('mean_spo2'),
       t90_pct:                getVal('t90'),
       stopbang_score:         getVal('stopbang'),
+      sona_score:             getVal('sona_score'),
       epworth_score:          getVal('epworth'),
       // PAP
       pap_prescribed:         getRadio('pap_prescribed'),
@@ -1343,6 +1366,7 @@
       intubation_attempts:    getVal('intubation_attempts'),
       opioid_used:            getVal('opioid_used'),
       opioid_dose_mcg:        getVal('opioid_dose'),
+      maintenance_agent:      getRadio('maintenance_agent'),
       // Intra-op
       intraop_desat_lt90:     getRadio('intraop_desat'),
       lowest_intraop_spo2:    getVal('lowest_intraop_spo2'),
@@ -1352,6 +1376,7 @@
       hypotension:            getRadio('hypotension'),
       arrhythmia:             getRadio('arrhythmia'),
       intraop_bp:             getVal('intraop_bp'),
+      intraop_hr:             getVal('intraop_hr'),
       etco2:                  getVal('etco2'),
       gtn_dosage:             getVal('gtn_dosage'),
       // PACU
@@ -1381,11 +1406,11 @@
     const d = collectData();
     const sections = [
       { title: '🏥 Demographics', keys: ['study_id','date_surgery','age','sex','height_cm','weight_kg','bmi'] },
-      { title: '🫁 OSA Details', keys: ['osa_diagnosed','sleep_study_type','ahi','osa_severity','odi','lowest_spo2_sleep','mean_spo2','t90_pct','stopbang_score','epworth_score'] },
+      { title: '🫁 OSA Details', keys: ['osa_diagnosed','sleep_study_type','ahi','osa_severity','odi','lowest_spo2_sleep','mean_spo2','t90_pct','stopbang_score','sona_score','epworth_score'] },
       { title: '😷 PAP Therapy', keys: ['pap_prescribed','device_type','compliance_hrs','pap_used_preop','pap_used_postop'] },
       { title: '🔪 Surgery', keys: ['surgery_type','specialty','urgency','surgery_duration_min','entry_technique','iap_range'] },
-      { title: '💉 Anaesthesia', keys: ['anaesthesia_type','asa_grade','mallampati','difficult_intubation','intubation_attempts','opioid_used','opioid_dose_mcg'] },
-      { title: '📊 Intra-op Events', keys: ['intraop_desat_lt90','lowest_intraop_spo2','difficult_mask_vent','laryngospasm','bronchospasm','hypotension','arrhythmia','intraop_bp','etco2','gtn_dosage'] },
+      { title: '💉 Anaesthesia', keys: ['anaesthesia_type','asa_grade','mallampati','difficult_intubation','intubation_attempts','opioid_used','opioid_dose_mcg','maintenance_agent'] },
+      { title: '📊 Intra-op Events', keys: ['intraop_desat_lt90','lowest_intraop_spo2','difficult_mask_vent','laryngospasm','bronchospasm','hypotension','arrhythmia','intraop_bp','intraop_hr','etco2','gtn_dosage'] },
       { title: '🛏️ PACU', keys: ['pacu_arrival','pacu_discharge','pacu_duration_min','aldrete_score','o2_required','postop_desat','lowest_pacu_spo2','airway_obstruction','pacu_cpap','reintubation'] },
       { title: '📋 Post-op Outcomes', keys: ['ward_admission','hdu_required','icu_required','mechanical_vent_postop','los_days','complication_24h','mortality'] },
     ];
@@ -1394,11 +1419,11 @@
       height_cm:'Height (cm)', weight_kg:'Weight (kg)', bmi:'BMI',
       osa_diagnosed:'OSA Diagnosed', sleep_study_type:'Study Type', ahi:'AHI', osa_severity:'Severity',
       odi:'ODI', lowest_spo2_sleep:'Lowest SpO₂', mean_spo2:'Mean SpO₂', t90_pct:'T90 (%)',
-      stopbang_score:'STOP-BANG', epworth_score:'Epworth',
+      stopbang_score:'STOP-BANG', sona_score:'SONA Score', epworth_score:'Epworth',
       pap_prescribed:'PAP Prescribed', device_type:'Device', compliance_hrs:'Compliance (hr)', pap_used_preop:'Used Pre-op', pap_used_postop:'Used Post-op',
       surgery_type:'Surgery', specialty:'Specialty', urgency:'Urgency', surgery_duration_min:'Duration (min)', entry_technique:'Entry Technique', iap_range:'IAP Range',
-      anaesthesia_type:'Anaesthesia', asa_grade:'ASA Grade', mallampati:'Mallampati', difficult_intubation:'Difficult Intubation', intubation_attempts:'Attempts', opioid_used:'Opioid', opioid_dose_mcg:'Dose (mcg)',
-      intraop_desat_lt90:'Desat <90%', lowest_intraop_spo2:'Lowest SpO₂', difficult_mask_vent:'Difficult Mask', laryngospasm:'Laryngospasm', bronchospasm:'Bronchospasm', hypotension:'Hypotension', arrhythmia:'Arrhythmia', intraop_bp:'Intra-op BP', etco2:'ETCO₂ (mmHg)', gtn_dosage:'GTN (mcg/min)',
+      anaesthesia_type:'Anaesthesia', asa_grade:'ASA Grade', mallampati:'Mallampati', difficult_intubation:'Difficult Intubation', intubation_attempts:'Attempts', opioid_used:'Opioid', opioid_dose_mcg:'Dose (mcg)', maintenance_agent:'Maintenance Agent',
+      intraop_desat_lt90:'Desat <90%', lowest_intraop_spo2:'Lowest SpO₂', difficult_mask_vent:'Difficult Mask', laryngospasm:'Laryngospasm', bronchospasm:'Bronchospasm', hypotension:'Hypotension', arrhythmia:'Arrhythmia', intraop_bp:'Intra-op BP', intraop_hr:'Intra-op HR (bpm)', etco2:'ETCO₂ (mmHg)', gtn_dosage:'GTN (mcg/min)',
       pacu_arrival:'Arrival', pacu_discharge:'Discharge', pacu_duration_min:'Duration (min)', aldrete_score:'Aldrete', o2_required:'O₂ Required', postop_desat:'Post-op Desat', lowest_pacu_spo2:'Lowest SpO₂', airway_obstruction:'Airway Obs.', pacu_cpap:'CPAP', reintubation:'Re-intubation',
       ward_admission:'Ward', hdu_required:'HDU', icu_required:'ICU/ICCU', mechanical_vent_postop:'Mech. Vent.', los_days:'LOS (days)', complication_24h:'Complication 24h', mortality:'Mortality',
     };
